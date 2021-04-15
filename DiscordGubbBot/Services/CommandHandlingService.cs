@@ -38,7 +38,11 @@ namespace DiscordGubbBot.Services
 
             JobManager.AddJob(
                 () => {
+#if DEBUG
                     var channel = _discord.GetChannel(Channels.DEV) as ITextChannel;
+#else
+                    var channel = _discord.GetChannel(Channels.CSGaming) as ITextChannel;
+#endif
                     channel?.SendMessageAsync(voting_template);
                 },
                 s => s.ToRunEvery(0).Days().At(8, 0).WeekdaysOnly()
@@ -58,7 +62,11 @@ namespace DiscordGubbBot.Services
 
         private async Task UpdateMessage(bool added, Cacheable<IUserMessage, ulong> userMessage, ISocketMessageChannel messageChannel, SocketReaction reaction)
         {
+#if DEBUG
             if (messageChannel.Id == Channels.DEV)
+#else
+            if (messageChannel.Id == Channels.CSGaming)
+#endif
             {
                 var message = await userMessage.GetOrDownloadAsync();
 
