@@ -26,10 +26,10 @@ namespace DiscordGubbBot.Modules
             => ReplyAsync("pong!");
 
 
-        [Command("ˆl")]
+        [Command("√ñl")]
         [Alias("gt", "punsch", "sprit", "vin", "gin")]
         public Task CheersAsync()
-            => ReplyAsync("SkÂl mina v‰nner!");
+            => ReplyAsync("Sk√•l mina v√§nner!");
 
         [Command("cat")]
         public async Task CatAsync()

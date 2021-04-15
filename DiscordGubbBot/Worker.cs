@@ -64,7 +64,7 @@ namespace DiscordGubbBot
             return Task.Run(() =>
             {
                 var channel = client.GetChannel(Channels.DEV) as ITextChannel;
-                channel?.SendMessageAsync("Ja, jag är vaken nu...");
+                channel?.SendMessageAsync("Ja, jag Ã¤r vaken nu...");
             });
         }
 

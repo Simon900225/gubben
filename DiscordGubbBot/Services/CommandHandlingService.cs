@@ -88,7 +88,7 @@ namespace DiscordGubbBot.Services
                         user = await messageChannel.GetUserAsync(r.Key);
                         if (i == 6)
                         {
-                            newContent += "Och pÂ avbytarb‰nken har vi:\n";
+                            newContent += "Och p√• avbytarb√§nken har vi:\n";
                         }
 
                         newContent += $"{i.ToString()}. {user.Username}: {r.Value.ToString("HH:mm:ss")}\n";
