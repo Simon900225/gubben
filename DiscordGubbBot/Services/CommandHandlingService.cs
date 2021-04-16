@@ -145,7 +145,7 @@ namespace DiscordGubbBot.Services
                 // Perform the execution of the command. In this method,
                 // the command service will perform precondition and parsing check
                 // then execute the command if one is matched.
-                await _commands.ExecuteAsync(context, argPos, _services);
+                //await _commands.ExecuteAsync(context, argPos, _services);
                 // Note that normally a result will be returned by this format, but here
                 // we will handle the result in CommandExecutedAsync,
             }
