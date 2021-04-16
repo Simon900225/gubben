@@ -15,9 +15,9 @@ namespace DiscordGubbBot.Modules
     // Modules must be public and inherit from an IModuleBase
     public class PublicModule : ModuleBase<SocketCommandContext>
     {
-        private readonly string Password = Environment.GetEnvironmentVariable("sshPassword");
-        private readonly string Username = Environment.GetEnvironmentVariable("sshUsername");
-        private readonly string Host = Environment.GetEnvironmentVariable("sshUrl");
+        private readonly string Password = Environment.GetEnvironmentVariable("SSH_PASSWORD");
+        private readonly string Username = Environment.GetEnvironmentVariable("SSH_USERNAME");
+        private readonly string Host = Environment.GetEnvironmentVariable("SSH_URL");
 
         // Dependency Injection will fill this value in for us
         public PictureService PictureService { get; set; }
