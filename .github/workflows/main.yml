@@ -42,7 +42,7 @@ jobs:
           docker save -o gubben.tar discordgubbbot
       
       - name: Copy file to host
-        run:
+        run: |
             cd ..
             ls
             cd ..
