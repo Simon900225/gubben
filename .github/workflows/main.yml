@@ -28,7 +28,8 @@ jobs:
       # Runs a single command using the runners shell
       - name: Create and load docker image
         run: |
-          docker build -t discordgubbbot -f Dockerfile ..
+          cd DiscordGubbBot
+          docker build -t discordgubbbot -f Dockerfile
           docker save -o gubben.tar discordgubbbot
           sudo docker load --input gubben.tar
 
