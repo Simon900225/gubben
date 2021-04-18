@@ -43,7 +43,7 @@ jobs:
       
       - name: Copy file to host
         run:
-            scp gubben.tar ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_URL }}:/home/${{ secrets.DEPLOY_USERNAME }}/gubben.tar -i ../private.key
+            scp -i ../private.key gubben.tar ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_URL }}:/home/${{ secrets.DEPLOY_USERNAME }}/gubben.tar 
           
       # Runs a set of commands using the runners shell
       #- name: Restart gubben
