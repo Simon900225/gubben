@@ -27,7 +27,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_PRIVATE_KEY" > ~/key/private.key
-          sudo chmod 600 ../private.key
+          sudo chmod 600 ~/key/private.key
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
         shell: bash
         env:
