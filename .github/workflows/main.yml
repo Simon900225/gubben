@@ -26,7 +26,7 @@ jobs:
       - name: Create SSH key
         run: |
           mkdir -p ~/.ssh/
-          echo "$SSH_PRIVATE_KEY" > ../private.key
+          echo "$SSH_PRIVATE_KEY" > ~/key/private.key
           sudo chmod 600 ../private.key
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
         shell: bash
@@ -40,11 +40,10 @@ jobs:
           cd DiscordGubbBot
           docker build -t discordgubbbot -f Dockerfile ..
           docker save -o gubben.tar discordgubbbot
-          scp gubben.tar ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_URL }}:/home/${{ secrets.DEPLOY_USERNAME }}/gubben.tar
       
       - name: Copy file to host
         run:
-            scp -i ../../private.key gubben.tar ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_URL }}:/home/${{ secrets.DEPLOY_USERNAME }}/gubben.tar
+            scp gubben.tar ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_URL }}:/home/${{ secrets.DEPLOY_USERNAME }}/gubben.tar -i ~/key/private.key
           
       # Runs a set of commands using the runners shell
       #- name: Restart gubben
