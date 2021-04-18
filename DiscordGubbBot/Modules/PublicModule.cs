@@ -107,6 +107,17 @@ namespace DiscordGubbBot.Modules
             await Context.Channel.SendFileAsync(stream, "cat.png");
         }
 
+        [Command("animal")]
+        [Alias("djur")]
+        public async Task AnimalAsync(string animal = "")
+        {
+            // Get a stream containing an image of a cat
+            var stream = await PictureService.GetPictureAsync(animal);
+            // Streams must be seeked to their beginning before being uploaded!
+            stream.Seek(0, SeekOrigin.Begin);
+            await Context.Channel.SendFileAsync(stream, "animal.png");
+        }
+
         // Get info on a user, or the user who invoked the command if one is not specified
         [Command("userinfo")]
         public async Task UserInfoAsync(IUser user = null)
