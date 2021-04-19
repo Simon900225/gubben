@@ -25,14 +25,12 @@ jobs:
         with:
             key: ${{ secrets.SSH_PRIVATE_KEY }}
             name: id_rsa-target
-            known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }} # will be appended to existing .ssh/known_hosts
-            #config: |                                         # will be appended to existing .ssh/config
-            #  Host target
-            #    HostName yyy.yyy.yyy.yyy
-            #    User user-of-target
-            #    IdentityFile ~/.ssh/id_rsa-target
-            #    ProxyCommand ssh -W %h:%p bastion
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+            known_hosts: 'placeholder' # will be appended to existing .ssh/known_hosts
+      
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.DEPLOY_URL }} >> ~/.ssh/known_hosts
+      
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it  
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
