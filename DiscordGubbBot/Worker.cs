@@ -40,7 +40,7 @@ namespace DiscordGubbBot
 
                 // Tokens should be considered secret data and never hard-coded.
                 // We can read from the environment variable to avoid hardcoding.
-                var loginToken = "NzUzNjMwMDU2ODY5Mzk2NTMx.X1o-rw.LfswSB-wKdAJ6UV7lG0ZBV7WivQ";
+                var loginToken = Environment.GetEnvironmentVariable("LOGIN_TOKEN");
                 await client.LoginAsync(TokenType.Bot, loginToken);
                 await client.StartAsync();
 
