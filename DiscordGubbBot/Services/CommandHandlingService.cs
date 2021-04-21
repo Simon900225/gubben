@@ -100,7 +100,7 @@ namespace DiscordGubbBot.Services
                         }
 
                         IGuildUser guildUser = (IGuildUser)user;
-                        var nickname = guildUser == null || guildUser?.Nickname == user.Username ? string.Empty : $"({guildUser.Nickname})";
+                        var nickname = string.IsNullOrEmpty(guildUser?.Nickname) || guildUser?.Nickname == user.Username ? string.Empty : $"({guildUser.Nickname})";
 
                         newContent += $"{i.ToString()}. {user.Username} {nickname}: {r.Value.ToString("HH:mm:ss")}\n";
 
