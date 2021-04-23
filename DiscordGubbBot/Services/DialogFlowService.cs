@@ -21,7 +21,7 @@ namespace DiscordGubbBot.Services
             _userID = userID;
             _projectId = projectId;
 #if DEBUG
-            System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "X:\\Gulnaras mapp\\gubben\\DiscordGubbBot\\Keys\\sunfleetangulart-1485335477034-3b3d9282d6de.json");
+            System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\GubbenKey\\sunfleetangulart-1485335477034-447b7a3a043f.json");
 #endif
         }
 
