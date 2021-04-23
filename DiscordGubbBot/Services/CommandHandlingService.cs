@@ -141,6 +141,10 @@ namespace DiscordGubbBot.Services
                 await _commands.ExecuteAsync(context, argPos, _services);
                 // Note that normally a result will be returned by this format, but here
                 // we will handle the result in CommandExecutedAsync,
+
+                DialowFlowService dialogflow = new DialowFlowService("123", "sunfleetangulart-1485335477034");
+                var dialogflowQueryResult = await dialogflow.CheckIntent(message.Content);
+                await message.Channel.SendMessageAsync(dialogflowQueryResult.FulfillmentText);
             }
             else
             {

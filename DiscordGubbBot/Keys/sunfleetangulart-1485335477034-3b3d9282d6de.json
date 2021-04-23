@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "sunfleetangulart-1485335477034",
+  "private_key_id": "3b3d9282d6ded5fed36e2844cc5ca4251702c852",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDf6xCYg+g+BHsB\n3woIXDXvjvpwZE8mTMmYu1Pz/MQ1nCrp06wX3yjf/d/Tx/pnVxT82nbxi4oINSNH\n2ylD8GAxHIhywMhiWBOM1ZthpgdW7IziY2ErHRMFKsrqUZ9kwzt+rBF1Tplhp+Wr\nUvXHu5ZL2dihIzjkbOB9ezyxZEZ4GYrOyGrLTyQgKb2Uj0+Ve2sKUcK5QdbKrVv+\n3lpumyZLCImpPgNxYSpzZVnTShDCZBipTk9hm9AyGk64HYrU70tVyCCCDvOcRo4v\npf3jEVIwwtytOXzqE9ml9QSFhE0bKtyczdpHh17uqbjtv9aeL/KR1XCZNjsiI+3j\nCeEYH04DAgMBAAECggEAImI2pKzQq0FF4DYvFLSQJa6HX13P15o/9J+DVzpvqKnH\n3yr9SJcgcDDMP3l8RoUVOHSVgibCtdrvBXguYHvXUYNHopNe0dcjfWNJnld/1gWx\n5ouLHrMyuf7ltNB+0Nq31o42ihRdMiU1e7bb/eUcwZ38iVXexRjA6hPT8Its1MER\nrQ3R194Xq+3tU8VTNcRtrzUKckzzjMU4bXv0KegP5ADQf1UTYyeUKY8pW4U/Cb22\nckeDx7Lz1KRIxUCt03dwYsmxfPbzyr25j3fW1TQdDH7VgXDdK4dlZ9is7XYIPatG\npytYBAJecES2RXTYHGKeBf1dLJGsw6nZC+iP8qNxAQKBgQD9aCd5afWT3I1qL0Sb\nG7wolmXlgS48sKe67gQIAOULzVqJ0KQ27ikhZk0yL2XqhPx/AD6PR2g/pbyR2C1l\nyI0sw/EaDmngN5xHuAj+Fy2Xh62Q9suSN1eLiH0zfbaG6ig903S0Nd4oViNOJUld\n4OoBXqkaIq/D90RCnwL+Pc4BAwKBgQDiNajlIHvAeC09/zQQs0xRLaEO9I2Bw50F\nalXseYjUAxLjajVtAr4mz4ZoQxHcXevgIAnIl+ZR6pmcBSFg/YvA0rtAiVUnf1ZB\nzp2J2ZOq+ZLPIioiF9oOnVHXt6KwYrQvblea35ncy2XuYnoezvw8jwJIps+xwaHF\nmco4FEtvAQKBgQDc3oVZfBOCV0AjByQDFb+AmOYjjd7hIxBvC7oTx8Pb75c0e9hF\n0HulEufCEDICoPr7LxlYBONGZozfic634n+6PubM0TdTKOVcVXnxDf69DpMnwRRa\nU0ZI5iRKVw5atYlxqfcUg8co3TtUh4dU/g64NuupTgZpBgJHFxWix/fgRQKBgDb2\nutcRkYAusy+BNvFn339KCvxLR6bkFN8f+0i+LxT0uj4vrFOUeweLHSlwQoK8/3cx\n0a6/2eLFkhVq2bVrZe2wRndj5yD1u8u5nGXGTC8a/ST/NCWcjgtHBn/Xytv437c2\npGqpMgWIFnhZzTp3KKq+RNvKTGTwm5Ib0BrYM4wBAoGBAIEP+cOydghoKXPFVIkB\ndDyYlB0VMjIJGwFSouJuUrYNIlAlSQ7FOC/b2xcDkwv0iUQKA42QbLpxyxQdCINf\neJoELGXRjLeTWk1O9wY+c6KG64Az/gXnldNJIQuXUezkoAbdsVoCO53mJUqTuAQn\nlzhm6YP8GFimUx5nLDLOOHR9\n-----END PRIVATE KEY-----\n",
+  "client_email": "gubben@sunfleetangulart-1485335477034.iam.gserviceaccount.com",
+  "client_id": "104327626644249038308",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gubben%40sunfleetangulart-1485335477034.iam.gserviceaccount.com"
+}
