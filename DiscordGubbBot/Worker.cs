@@ -86,7 +86,6 @@ namespace DiscordGubbBot
                 .AddSingleton<CommandHandlingService>()
                 .AddSingleton<HttpClient>()
                 .AddSingleton<PictureService>()
-                .AddSingleton<DialowFlowService>()
                 .BuildServiceProvider();
         }
     }
