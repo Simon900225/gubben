@@ -18,7 +18,7 @@ namespace DiscordGubbBot.Services
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
 
-        private readonly string voting_template = "God morgon gubbar!\nVilka ska vara med och spela lunch-cs idag?\n";
+        private readonly string voting_morning_template = "God morgon gubbar!\nVilka ska vara med och spela lunch-cs idag?\n";
 
         public CommandHandlingService(IServiceProvider services)
         {
@@ -32,25 +32,27 @@ namespace DiscordGubbBot.Services
             // if it qualifies as a command.
             _discord.MessageReceived += MessageReceivedAsync;
             _discord.ReactionAdded += ReactionAdded;
-            _discord.ReactionRemoved += _discord_ReactionRemoved;
+            _discord.ReactionRemoved += ReactionRemoved;
 
             JobManager.Initialize();
 
-            JobManager.AddJob(
-                () => {
-#if DEBUG
-                    var channel = _discord.GetChannel(Channels.DEV) as ITextChannel;
-#else
-                    var channel = _discord.GetChannel(Channels.CSGaming) as ITextChannel;
-#endif
-                    channel?.SendMessageAsync(voting_template);
-                },
-                s => s.ToRunEvery(0).Days().At(8, 0).WeekdaysOnly()
-            );
+//Lunch-cs är ett minne blott
+//            JobManager.AddJob(
+//                async () => {
+//#if DEBUG
+//                    var channel = _discord.GetChannel(Channels.DEV) as ITextChannel;
+//#else
+//                    var channel = _discord.GetChannel(Channels.CSGaming) as ITextChannel;
+//#endif
+//                    var message = await channel?.SendMessageAsync(voting_template);
+                    
+//                },
+//                s => s.ToRunEvery(0).Days().At(8, 0).WeekdaysOnly()
+//            );
 
         }
 
-        private async Task _discord_ReactionRemoved(Cacheable<IUserMessage, ulong> userMessage, ISocketMessageChannel messageChannel, SocketReaction reaction)
+        private async Task ReactionRemoved(Cacheable<IUserMessage, ulong> userMessage, ISocketMessageChannel messageChannel, SocketReaction reaction)
         {
             await UpdateMessage(false, userMessage, messageChannel, reaction);
         }
@@ -70,8 +72,11 @@ namespace DiscordGubbBot.Services
             {
                 var message = await userMessage.GetOrDownloadAsync();
 
-                if (message?.Content.Contains("Vilka ska vara med och spela lunch-cs idag?") ?? false)
+                if (message != null && (message.Content.Contains("Vilka ska vara med och spela lunch-cs idag?") || message.Content.ToLower().Contains("vilka vill vara med?")))
                 {
+                    var newContent = message.Content.Split('?').FirstOrDefault() ?? "";
+                    newContent += "?\n";
+
                     var user = await messageChannel.GetUserAsync(reaction.UserId);
 
                     if (!reactionTimes.ContainsKey(message.Id))
@@ -88,8 +93,6 @@ namespace DiscordGubbBot.Services
                             reactionTimes[message.Id].Remove(user.Id);
                     }
 
-                    var newContent = voting_template;
-
                     int i = 1;
                     foreach (var r in reactionTimes[message.Id].OrderBy(x => x.Value))
                     {
@@ -102,10 +105,13 @@ namespace DiscordGubbBot.Services
                         IGuildUser guildUser = (IGuildUser)user;
                         var nickname = string.IsNullOrEmpty(guildUser?.Nickname) || guildUser?.Nickname == user.Username ? string.Empty : $"({guildUser.Nickname})";
 
-                        newContent += $"{i.ToString()}. {user.Username} {nickname}: {r.Value.ToString("HH:mm:ss")}\n";
+                        newContent += $"{i}. {user.Username} {nickname}: {r.Value:HH:mm:ss}\n";
 
                         i++;
                     }
+
+                    //if (i > 0)
+                    //    newContent += "\nMatchen börjar 11:30";
 
                     await message.ModifyAsync((x) =>
                     {
@@ -138,16 +144,20 @@ namespace DiscordGubbBot.Services
                 // Perform the execution of the command. In this method,
                 // the command service will perform precondition and parsing check
                 // then execute the command if one is matched.
-                await _commands.ExecuteAsync(context, argPos, _services);
+                var result = await _commands.ExecuteAsync(context, argPos, _services);
+                
                 // Note that normally a result will be returned by this format, but here
                 // we will handle the result in CommandExecutedAsync,
-
-                DialowFlowService dialogflow = new DialowFlowService("123", "sunfleetangulart-1485335477034");
-                var dialogflowQueryResult = await dialogflow.CheckIntent(message.Content);
-                await message.Channel.SendMessageAsync(dialogflowQueryResult.FulfillmentText);
+                if (!result.IsSuccess)
+                {
+                    DialowFlowService dialogflow = new DialowFlowService("123", "sunfleetangulart-1485335477034");
+                    var dialogflowQueryResult = await dialogflow.CheckIntent(message.Content);
+                    await message.Channel.SendMessageAsync(dialogflowQueryResult.FulfillmentText);
+                }
             }
             else
             {
+                //var refer = rawMessage.Reference.MessageId; //id of referenced message.(Store todays message as static id)
                 var context = new SocketCommandContext(_discord, message);
                 // Perform the execution of the command. In this method,
                 // the command service will perform precondition and parsing check

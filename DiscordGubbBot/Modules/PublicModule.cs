@@ -23,6 +23,13 @@ namespace DiscordGubbBot.Modules
         public PictureService PictureService { get; set; }
         //public IConfiguration Configuration { get; set; } //Crashes application?
 
+        [Command("match")]
+        public async Task StartMatch(string time = "")
+        {
+            if (time.Length == 5 && time.Contains(":"))
+                await ReplyAsync($"Match kl {time} vilka vill vara med?");
+            await ReplyAsync($"Match nu! Vilka vill vara med?");
+        }
 
         //TODO; Add info attribute that explains the command.
         [Command("vad kan du göra?")]
