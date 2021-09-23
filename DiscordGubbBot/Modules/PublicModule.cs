@@ -28,7 +28,8 @@ namespace DiscordGubbBot.Modules
         {
             if (time.Length == 5 && time.Contains(":"))
                 await ReplyAsync($"Match kl {time} vilka vill vara med?");
-            await ReplyAsync($"Match nu! Vilka vill vara med?");
+            else
+                await ReplyAsync($"Match nu! Vilka vill vara med?");
         }
 
         //TODO; Add info attribute that explains the command.
