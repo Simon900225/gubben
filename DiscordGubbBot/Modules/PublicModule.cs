@@ -24,10 +24,13 @@ namespace DiscordGubbBot.Modules
         //public IConfiguration Configuration { get; set; } //Crashes application?
 
         [Command("match")]
+        [Alias("game")]
         public async Task StartMatch(string time = "")
         {
             if (time.Length == 5 && time.Contains(":"))
                 await ReplyAsync($"Match kl {time} vilka vill vara med?");
+            else if (int.TryParse(time, out int t) && t < 2359)
+                await ReplyAsync($"Match kl {t.ToString().Insert(2, ":")} vilka vill vara med?");
             else
                 await ReplyAsync($"Match nu! Vilka vill vara med?");
         }
