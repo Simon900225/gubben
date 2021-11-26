@@ -18,6 +18,7 @@ namespace DiscordGubbBot.Modules
         private readonly string Password = Environment.GetEnvironmentVariable("SSH_PASSWORD");
         private readonly string Username = Environment.GetEnvironmentVariable("SSH_USERNAME");
         private readonly string Host = Environment.GetEnvironmentVariable("SSH_URL");
+        readonly Random random = new();
 
         // Dependency Injection will fill this value in for us
         public PictureService PictureService { get; set; }
@@ -33,6 +34,36 @@ namespace DiscordGubbBot.Modules
                 await ReplyAsync($"Match kl {t.ToString().Insert(2, ":")} vilka vill vara med?");
             else
                 await ReplyAsync($"Match nu! Vilka vill vara med?");
+
+            if (random.Next(0,20) == 0)
+            {
+                await ReplyAsync($"Jag kan tyvärr inte vara med den här gången. Men GLHF!");
+            }
+        }
+
+
+        [Command("vote")]
+        [Alias("rösta")]
+        public async Task Vote(string alternativesString = "")
+        {
+            var alternatives = alternativesString.Split(";");
+            
+            for (int i = 0; i < alternatives.Length; i++)
+            {
+
+            }
+
+            await ReplyAsync($"Vad tycker ni?\n" + string.Join("\n", alternatives));
+        }
+
+        [Command("attendance")]
+        [Alias("Handuppräckning")]
+        public async Task Attendance (string eventName = "")
+        {
+            if (string.IsNullOrEmpty(eventName))
+                await ReplyAsync("Vilka ska vara med?");
+            else
+                await ReplyAsync($"Vilka vill vara med på {eventName}");
         }
 
         //TODO; Add info attribute that explains the command.

@@ -64,61 +64,91 @@ namespace DiscordGubbBot.Services
 
         private async Task UpdateMessage(bool added, Cacheable<IUserMessage, ulong> userMessage, ISocketMessageChannel messageChannel, SocketReaction reaction)
         {
-#if DEBUG
-            if (messageChannel.Id == Channels.DEV)
-#else
-            if (messageChannel.Id == Channels.CSGaming)
-#endif
+            var message = await userMessage.GetOrDownloadAsync();
+
+            string newContent = "";
+
+            if (message != null)
             {
-                var message = await userMessage.GetOrDownloadAsync();
-
-                if (message != null && (message.Content.Contains("Vilka ska vara med och spela lunch-cs idag?") || message.Content.ToLower().Contains("vilka vill vara med?")))
+                if (message.Content.Contains("Vilka ska vara med och spela lunch-cs idag?") || message.Content.ToLower().Contains("vilka vill vara med?"))
                 {
-                    var newContent = message.Content.Split('?').FirstOrDefault() ?? "";
-                    newContent += "?\n";
+                    newContent = await UpdateGameMessage(added, messageChannel, reaction, message);
+                }
+                else if (message.Content.Contains("Vad tycker ni?"))
+                {
 
+                }
+                else if (message.Content.Contains("Vilka ska vara med?") || message.Content.Contains("Vilka vill vara med på"))
+                {
                     var user = await messageChannel.GetUserAsync(reaction.UserId);
-
-                    if (!reactionTimes.ContainsKey(message.Id))
-                        reactionTimes.Add(message.Id, new Dictionary<ulong, DateTime>());
-
-                    if (added)
-                    {
-                        if (!reactionTimes[message.Id].ContainsKey(user.Id))
-                            reactionTimes[message.Id].Add(user.Id, DateTime.Now);
-                    }
-                    else
-                    {
-                        if (reactionTimes[message.Id].ContainsKey(user.Id))
-                            reactionTimes[message.Id].Remove(user.Id);
-                    }
-
-                    int i = 1;
+                    
+                    ToggleReactionTime(added, message.Id, user.Id);
+                    
                     foreach (var r in reactionTimes[message.Id].OrderBy(x => x.Value))
                     {
                         user = await messageChannel.GetUserAsync(r.Key);
-                        if (i == 6)
-                        {
-                            newContent += "Och på avbytarbänken har vi:\n";
-                        }
-
+                        
                         IGuildUser guildUser = (IGuildUser)user;
                         var nickname = string.IsNullOrEmpty(guildUser?.Nickname) || guildUser?.Nickname == user.Username ? string.Empty : $"({guildUser.Nickname})";
 
-                        newContent += $"{i}. {user.Username} {nickname}: {r.Value:HH:mm:ss}\n";
-
-                        i++;
+                        newContent += $"{user.Username} {nickname}\n";
                     }
-
-                    //if (i > 0)
-                    //    newContent += "\nMatchen börjar 11:30";
-
-                    await message.ModifyAsync((x) =>
-                    {
-                        x.Content = newContent;
-                    });
                 }
             }
+
+            if (!string.IsNullOrEmpty(newContent))
+            {
+                await message.ModifyAsync((x) =>
+                {
+                    x.Content = newContent;
+                });
+            }
+        }
+
+        private void ToggleReactionTime(bool added, ulong messageId, ulong userId)
+        {
+            if (!reactionTimes.ContainsKey(messageId))
+                reactionTimes.Add(messageId, new Dictionary<ulong, DateTime>());
+
+            if (added)
+            {
+                if (!reactionTimes[messageId].ContainsKey(userId))
+                    reactionTimes[messageId].Add(userId, DateTime.Now);
+            }
+            else
+            {
+                if (reactionTimes[messageId].ContainsKey(userId))
+                    reactionTimes[messageId].Remove(userId);
+            }
+        }
+
+        private async Task<string> UpdateGameMessage(bool added, ISocketMessageChannel messageChannel, SocketReaction reaction, IUserMessage message)
+        {
+            var newContent = message.Content.Split('?').FirstOrDefault() ?? "";
+            newContent += "?\n";
+
+            var user = await messageChannel.GetUserAsync(reaction.UserId);
+
+            ToggleReactionTime(added, message.Id, user.Id);
+
+            int i = 1;
+            foreach (var r in reactionTimes[message.Id].OrderBy(x => x.Value))
+            {
+                user = await messageChannel.GetUserAsync(r.Key);
+                if (i == 6)
+                {
+                    newContent += "Och på avbytarbänken har vi:\n";
+                }
+
+                IGuildUser guildUser = (IGuildUser)user;
+                var nickname = string.IsNullOrEmpty(guildUser?.Nickname) || guildUser?.Nickname == user.Username ? string.Empty : $"({guildUser.Nickname})";
+
+                newContent += $"{i}. {user.Username} {nickname}: {r.Value:HH:mm:ss}\n";
+
+                i++;
+            }
+
+            return newContent;
         }
 
         public async Task InitializeAsync()
