@@ -57,13 +57,13 @@ namespace DiscordGubbBot.Modules
         }
 
         [Command("attendance")]
-        [Alias("Handuppräckning")]
+        [Alias("handuppräckning")]
         public async Task Attendance (string eventName = "")
         {
             if (string.IsNullOrEmpty(eventName))
                 await ReplyAsync("Vilka ska vara med?");
             else
-                await ReplyAsync($"Vilka vill vara med på {eventName}");
+                await ReplyAsync($"Vilka vill vara med på {eventName}?");
         }
 
         //TODO; Add info attribute that explains the command.
