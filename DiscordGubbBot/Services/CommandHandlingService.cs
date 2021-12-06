@@ -81,6 +81,7 @@ namespace DiscordGubbBot.Services
                 else if (message.Content.Contains("Vilka ska vara med?") || message.Content.Contains("Vilka vill vara med på"))
                 {
                     newContent = message.Content.Split('?').FirstOrDefault() ?? "";
+                    newContent += "?\n";
 
                     var user = await messageChannel.GetUserAsync(reaction.UserId);
                     
