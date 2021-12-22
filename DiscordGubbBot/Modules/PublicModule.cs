@@ -32,6 +32,8 @@ namespace DiscordGubbBot.Modules
                 await ReplyAsync($"Match kl {time} vilka vill vara med?");
             else if (int.TryParse(time, out int t) && t < 2359)
                 await ReplyAsync($"Match kl {t.ToString().Insert(2, ":")} vilka vill vara med?");
+            else if (time.ToLower() == "lunch")
+                await ReplyAsync($"Vilka ska vara med och spela lunch-cs idag?");
             else
                 await ReplyAsync($"Match nu! Vilka vill vara med?");
 
