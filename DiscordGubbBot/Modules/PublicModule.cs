@@ -29,7 +29,7 @@ namespace DiscordGubbBot.Modules
         public async Task StartMatch(string time = "")
         {
             if (time.Substring(0,5).Contains(":"))
-                await ReplyAsync($"Match kl {time} vilka vill vara med?");
+                await ReplyAsync($"Match kl {time.Substring(0, 5)} vilka vill vara med?");
             else if (int.TryParse(time, out int t) && t < 2359)
                 await ReplyAsync($"Match kl {t.ToString().Insert(2, ":")} vilka vill vara med?");
             else if (time.ToLower() == "lunch")
