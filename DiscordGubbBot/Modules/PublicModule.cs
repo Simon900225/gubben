@@ -44,7 +44,7 @@ namespace DiscordGubbBot.Modules
             }
         }
 
-        public static List<Emoji> OrderedEmojiList = new List<Emoji>() { new Emoji("1️⃣"), new Emoji(":two:"), new Emoji(":three:"), new Emoji(":four:"), new Emoji(":five:"), new Emoji(":six:"), new Emoji(":seven:"), new Emoji(":eight:"), new Emoji(":nine:") };
+        public static List<Emoji> OrderedEmojiList = new List<Emoji>() { new Emoji("1️⃣"), new Emoji("2️⃣"), new Emoji("3️⃣"), new Emoji("4️⃣"), new Emoji("5️⃣"), new Emoji("6️⃣"), new Emoji("7️⃣"), new Emoji("8️⃣"), new Emoji("9️⃣") };
 
         public static List<Poll> Polls = new();
 
@@ -54,16 +54,22 @@ namespace DiscordGubbBot.Modules
         {
             var poll = new Poll();
             var alternatives = alternativesString.Split(";");
-            
-            for (int i = 0; i < alternatives.Length; i++)
+            if (alternatives.Length > 9)
             {
-                poll.Alternatives.Add(new Alternative() { Emoji = OrderedEmojiList[i], Text = alternatives[i] });
+                await ReplyAsync($"Så många alternativ kan du väl inte ha?");
             }
+            else
+            {
+                for (int i = 0; i < alternatives.Length; i++)
+                {
+                    poll.Alternatives.Add(new Alternative() { Emoji = OrderedEmojiList[i], Text = alternatives[i] });
+                }
 
-            var message = await ReplyAsync($"Vad tycker ni?\n" + string.Join("\n", poll.Alternatives.Select(x => x.Emoji + " " + x.Text)));
-            poll.MessageID = message.Id;
+                var message = await ReplyAsync($"Vad tycker ni?\n" + string.Join("\n", poll.Alternatives.Select(x => x.Emoji + " " + x.Text)));
+                poll.MessageID = message.Id;
 
-            Polls.Add(poll);
+                Polls.Add(poll);
+            }
         }
 
         [Command("attendance")]
