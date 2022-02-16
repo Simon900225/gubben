@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -43,19 +44,26 @@ namespace DiscordGubbBot.Modules
             }
         }
 
+        public static List<Emoji> OrderedEmojiList = new List<Emoji>() { new Emoji("1️⃣"), new Emoji(":two:"), new Emoji(":three:"), new Emoji(":four:"), new Emoji(":five:"), new Emoji(":six:"), new Emoji(":seven:"), new Emoji(":eight:"), new Emoji(":nine:") };
+
+        public static List<Poll> Polls = new();
 
         [Command("vote")]
         [Alias("rösta")]
-        public async Task Vote(string alternativesString = "")
+        public async Task Vote(string alternativesString = "") //Params?
         {
+            var poll = new Poll();
             var alternatives = alternativesString.Split(";");
             
             for (int i = 0; i < alternatives.Length; i++)
             {
-
+                poll.Alternatives.Add(new Alternative() { Emoji = OrderedEmojiList[i], Text = alternatives[i] });
             }
 
-            await ReplyAsync($"Vad tycker ni?\n" + string.Join("\n", alternatives));
+            var message = await ReplyAsync($"Vad tycker ni?\n" + string.Join("\n", poll.Alternatives.Select(x => x.Emoji + " " + x.Text)));
+            poll.MessageID = message.Id;
+
+            Polls.Add(poll);
         }
 
         [Command("attendance")]

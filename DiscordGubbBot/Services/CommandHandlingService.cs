@@ -8,12 +8,13 @@ using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
 using FluentScheduler;
+using DiscordGubbBot.Modules;
 
 namespace DiscordGubbBot.Services
 {
     public class CommandHandlingService
     {
-        private readonly Dictionary<ulong, Dictionary<ulong, DateTime>> reactionTimes = new Dictionary<ulong, Dictionary<ulong, DateTime>>();
+        private readonly Dictionary<ulong, Dictionary<ulong, Reaction>> reactionTimes = new Dictionary<ulong, Dictionary<ulong, Reaction>>();
         private readonly CommandService _commands;
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
@@ -76,6 +77,39 @@ namespace DiscordGubbBot.Services
                 }
                 else if (message.Content.Contains("Vad tycker ni?"))
                 {
+                    var user = await messageChannel.GetUserAsync(reaction.UserId);
+                    var emoji = new Emoji(reaction.Emote.Name);
+                    ToggleReactionTime(added, message.Id, user.Id, emoji);
+                    
+                    newContent = message.Content.Split('?').FirstOrDefault() ?? "";
+                    newContent += "?\n";
+
+                    var poll = PublicModule.Polls.FirstOrDefault(x => x.MessageID == message.Id);
+
+                    if (poll != null)
+                    {
+                        foreach(var alternative in poll.Alternatives)
+                        {
+                            newContent += $"{alternative.Emoji} {alternative.Text}";
+                            bool first = true;
+                            foreach (var r in reactionTimes[message.Id].Where(x => x.Value.Emoji.Name == alternative.Emoji.Name).OrderBy(x => x.Value.Time))
+                            {
+                                if (!first)
+                                {
+                                    newContent += ",";
+                                }
+                                if (first)
+                                    first = false;
+                                user = await messageChannel.GetUserAsync(r.Key);
+
+                                IGuildUser guildUser = (IGuildUser)user;
+                                var nickname = string.IsNullOrEmpty(guildUser?.Nickname) || guildUser?.Nickname == user.Username ? string.Empty : $"({guildUser.Nickname})";
+
+                                newContent += $" {user.Username} {nickname}";
+                            }
+                            newContent += "\n";
+                        }
+                    }
 
                 }
                 else if (message.Content.Contains("Vilka ska vara med?") || message.Content.Contains("Vilka vill vara med på"))
@@ -87,7 +121,7 @@ namespace DiscordGubbBot.Services
                     
                     ToggleReactionTime(added, message.Id, user.Id);
                     
-                    foreach (var r in reactionTimes[message.Id].OrderBy(x => x.Value))
+                    foreach (var r in reactionTimes[message.Id].OrderBy(x => x.Value.Time))
                     {
                         user = await messageChannel.GetUserAsync(r.Key);
                         
@@ -108,15 +142,32 @@ namespace DiscordGubbBot.Services
             }
         }
 
-        private void ToggleReactionTime(bool added, ulong messageId, ulong userId)
+        class Reaction
+        {
+            public Reaction(DateTime time)
+            {
+                Time = time;
+            }
+
+            public Reaction(DateTime time, Emoji emoji)
+            {
+                Time = time;
+                Emoji = emoji;
+            }
+
+            public DateTime Time { get; set; }
+            public Emoji Emoji { get; set; }
+        }
+
+        private void ToggleReactionTime(bool added, ulong messageId, ulong userId, Emoji emoji = null)
         {
             if (!reactionTimes.ContainsKey(messageId))
-                reactionTimes.Add(messageId, new Dictionary<ulong, DateTime>());
+                reactionTimes.Add(messageId, new Dictionary<ulong, Reaction>());
 
             if (added)
             {
                 if (!reactionTimes[messageId].ContainsKey(userId))
-                    reactionTimes[messageId].Add(userId, DateTime.Now);
+                    reactionTimes[messageId].Add(userId, new Reaction(DateTime.Now, emoji));
             }
             else
             {
@@ -135,7 +186,7 @@ namespace DiscordGubbBot.Services
             ToggleReactionTime(added, message.Id, user.Id);
 
             int i = 1;
-            foreach (var r in reactionTimes[message.Id].OrderBy(x => x.Value))
+            foreach (var r in reactionTimes[message.Id].OrderBy(x => x.Value.Time))
             {
                 user = await messageChannel.GetUserAsync(r.Key);
                 if (i == 6)
