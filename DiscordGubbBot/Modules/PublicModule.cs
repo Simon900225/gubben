@@ -48,22 +48,30 @@ namespace DiscordGubbBot.Modules
 
         [Command("vote")]
         [Alias("rösta")]
-        public async Task Vote(string alternativesString = "") //Params?
+        public async Task Vote(params string[] alternativesStrings)
         {
+            var alternatives = alternativesStrings.ToList();
+
             var poll = new Poll();
-            var alternatives = alternativesString.Split(";");
-            if (alternatives.Length > 9)
+            var question = string.Empty;
+            if (alternativesStrings.FirstOrDefault().StartsWith("q="))
+            {
+                poll.Question = alternativesStrings.FirstOrDefault();
+                alternatives = alternatives.Skip(1).ToList();
+            }
+
+            if (alternatives.Count > 9)
             {
                 await ReplyAsync($"Så många alternativ kan du väl inte ha?");
             }
             else
             {
-                for (int i = 0; i < alternatives.Length; i++)
+                for (int i = 0; i < alternatives.Count; i++)
                 {
                     poll.Alternatives.Add(new Alternative() { Emoji = InMemoryStorage.OrderedEmojiList[i], Text = alternatives[i] });
                 }
 
-                var message = await ReplyAsync($"Vad tycker ni?\n" + string.Join("\n", poll.Alternatives.Select(x => x.Emoji + " " + x.Text)));
+                var message = await ReplyAsync($"Vad tycker ni? {question} {(string.IsNullOrEmpty(question) ? "?": "")}\n" + string.Join("\n", poll.Alternatives.Select(x => x.Emoji + " " + x.Text)));
                 poll.MessageID = message.Id;
 
                 InMemoryStorage.Polls.Add(message.Id, poll);

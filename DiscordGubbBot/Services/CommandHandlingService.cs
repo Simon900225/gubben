@@ -151,9 +151,10 @@ namespace DiscordGubbBot.Services
                         InMemoryStorage.MessageReactions[message.Id].Remove(toRemove);
                 }
 
-                newContent = message.Content.Split('?').FirstOrDefault() ?? "";
-                newContent += "?\n";
-            
+                var question = poll.Question;
+
+                newContent = $"Vad tycker ni? {question} {(string.IsNullOrEmpty(question) ? "?" : "")}\n";
+
                 foreach (var alternative in poll.Alternatives)
                 {
                     var alternativeReactions = InMemoryStorage.MessageReactions[message.Id].Where(x => x.Emoji.Name == alternative.Emoji.Name).OrderBy(x => x.Time);
