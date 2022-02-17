@@ -9,12 +9,13 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentScheduler;
 using DiscordGubbBot.Modules;
+using DiscordGubbBot.Model;
+using DiscordGubbBot.Storage;
 
 namespace DiscordGubbBot.Services
 {
     public class CommandHandlingService
     {
-        private readonly Dictionary<ulong, Dictionary<ulong, Reaction>> reactionTimes = new Dictionary<ulong, Dictionary<ulong, Reaction>>();
         private readonly CommandService _commands;
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
@@ -77,40 +78,7 @@ namespace DiscordGubbBot.Services
                 }
                 else if (message.Content.Contains("Vad tycker ni?"))
                 {
-                    var user = await messageChannel.GetUserAsync(reaction.UserId);
-                    var emoji = new Emoji(reaction.Emote.Name);
-                    ToggleReactionTime(added, message.Id, user.Id, emoji);
-                    
-                    newContent = message.Content.Split('?').FirstOrDefault() ?? "";
-                    newContent += "?\n";
-
-                    var poll = PublicModule.Polls.FirstOrDefault(x => x.MessageID == message.Id);
-
-                    if (poll != null)
-                    {
-                        foreach(var alternative in poll.Alternatives)
-                        {
-                            newContent += $"{alternative.Emoji} {alternative.Text}";
-                            bool first = true;
-                            foreach (var r in reactionTimes[message.Id].Where(x => x.Value.Emoji.Name == alternative.Emoji.Name).OrderBy(x => x.Value.Time))
-                            {
-                                if (!first)
-                                {
-                                    newContent += ",";
-                                }
-                                if (first)
-                                    first = false;
-                                user = await messageChannel.GetUserAsync(r.Key);
-
-                                IGuildUser guildUser = (IGuildUser)user;
-                                var nickname = string.IsNullOrEmpty(guildUser?.Nickname) || guildUser?.Nickname == user.Username ? string.Empty : $"({guildUser.Nickname})";
-
-                                newContent += $" {user.Username} {nickname}";
-                            }
-                            newContent += "\n";
-                        }
-                    }
-
+                    newContent = await UpdatePoll(added, messageChannel, reaction, message);
                 }
                 else if (message.Content.Contains("Vilka ska vara med?") || message.Content.Contains("Vilka vill vara med på"))
                 {
@@ -121,7 +89,7 @@ namespace DiscordGubbBot.Services
                     
                     ToggleReactionTime(added, message.Id, user.Id);
                     
-                    foreach (var r in reactionTimes[message.Id].OrderBy(x => x.Value.Time))
+                    foreach (var r in InMemoryStorage.ReactionTimes[message.Id].OrderBy(x => x.Value.Time))
                     {
                         user = await messageChannel.GetUserAsync(r.Key);
                         
@@ -142,39 +110,77 @@ namespace DiscordGubbBot.Services
             }
         }
 
-        class Reaction
-        {
-            public Reaction(DateTime time)
-            {
-                Time = time;
-            }
-
-            public Reaction(DateTime time, Emoji emoji)
-            {
-                Time = time;
-                Emoji = emoji;
-            }
-
-            public DateTime Time { get; set; }
-            public Emoji Emoji { get; set; }
-        }
-
         private void ToggleReactionTime(bool added, ulong messageId, ulong userId, Emoji emoji = null)
         {
-            if (!reactionTimes.ContainsKey(messageId))
-                reactionTimes.Add(messageId, new Dictionary<ulong, Reaction>());
+            if (!InMemoryStorage.ReactionTimes.ContainsKey(messageId))
+                InMemoryStorage.ReactionTimes.Add(messageId, new Dictionary<ulong, Reaction>());
 
             if (added)
             {
-                if (!reactionTimes[messageId].ContainsKey(userId))
-                    reactionTimes[messageId].Add(userId, new Reaction(DateTime.Now, emoji));
+                if (!InMemoryStorage.ReactionTimes[messageId].ContainsKey(userId))
+                    InMemoryStorage.ReactionTimes[messageId].Add(userId, new Reaction(userId, DateTime.Now, emoji));
             }
             else
             {
-                if (reactionTimes[messageId].ContainsKey(userId))
-                    reactionTimes[messageId].Remove(userId);
+                if (InMemoryStorage.ReactionTimes[messageId].ContainsKey(userId))
+                    InMemoryStorage.ReactionTimes[messageId].Remove(userId);
             }
         }
+
+        private async Task<string> UpdatePoll(bool added, ISocketMessageChannel messageChannel, SocketReaction reaction, IUserMessage message)
+        {
+            var newContent = message.Content;
+            var poll = InMemoryStorage.Polls[message.Id];
+
+            if (poll != null)
+            {
+                var user = await messageChannel.GetUserAsync(reaction.UserId);
+                var emoji = new Emoji(reaction.Emote.Name);
+
+                if (!InMemoryStorage.MessageReactions.ContainsKey(message.Id))
+                {
+                    InMemoryStorage.MessageReactions.Add(message.Id, new List<Reaction>());
+                }
+
+                if(added)
+                    InMemoryStorage.MessageReactions[message.Id].Add(new Reaction(user.Id, DateTime.Now, emoji));
+                else
+                {
+                    var toRemove = InMemoryStorage.MessageReactions[message.Id].FirstOrDefault(x => x.UserID == user.Id && x.Emoji.Name == emoji.Name);
+                    if (toRemove != null)
+                        InMemoryStorage.MessageReactions[message.Id].Remove(toRemove);
+                }
+
+                newContent = message.Content.Split('?').FirstOrDefault() ?? "";
+                newContent += "?\n";
+            
+                foreach (var alternative in poll.Alternatives)
+                {
+                    var alternativeReactions = InMemoryStorage.MessageReactions[message.Id].Where(x => x.Emoji.Name == alternative.Emoji.Name).OrderBy(x => x.Time);
+                    newContent += $"{alternative.Emoji} {alternative.Text} - {alternativeReactions.Count()}st :";
+                    bool first = true;
+                    foreach (var r in alternativeReactions)
+                    {
+                        if (!first)
+                        {
+                            newContent += ",";
+                        }
+                        if (first)
+                            first = false;
+
+                        var reactUser = await messageChannel.GetUserAsync(r.UserID);
+
+                        IGuildUser guildUser = (IGuildUser)reactUser;
+                        var nickname = string.IsNullOrEmpty(guildUser?.Nickname) || guildUser?.Nickname == reactUser.Username ? string.Empty : $"({guildUser.Nickname})";
+
+                        newContent += $" {reactUser.Username} {nickname}";
+                    }
+                    newContent += "\n";
+                }
+            }
+            return newContent;
+        }
+
 
         private async Task<string> UpdateGameMessage(bool added, ISocketMessageChannel messageChannel, SocketReaction reaction, IUserMessage message)
         {
@@ -186,7 +192,7 @@ namespace DiscordGubbBot.Services
             ToggleReactionTime(added, message.Id, user.Id);
 
             int i = 1;
-            foreach (var r in reactionTimes[message.Id].OrderBy(x => x.Value.Time))
+            foreach (var r in InMemoryStorage.ReactionTimes[message.Id].OrderBy(x => x.Value.Time))
             {
                 user = await messageChannel.GetUserAsync(r.Key);
                 if (i == 6)
@@ -197,7 +203,7 @@ namespace DiscordGubbBot.Services
                 IGuildUser guildUser = (IGuildUser)user;
                 var nickname = string.IsNullOrEmpty(guildUser?.Nickname) || guildUser?.Nickname == user.Username ? string.Empty : $"({guildUser.Nickname})";
 
-                newContent += $"{i}. {user.Username} {nickname}: {r.Value:HH:mm:ss}\n";
+                newContent += $"{i}. {user.Username} {nickname}: {r.Value.Time:HH:mm:ss}\n";
 
                 i++;
             }

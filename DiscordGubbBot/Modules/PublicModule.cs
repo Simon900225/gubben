@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using DiscordGubbBot.Model;
 using DiscordGubbBot.Services;
+using DiscordGubbBot.Storage;
 using Microsoft.Extensions.Configuration;
 using Renci.SshNet;
 
@@ -44,10 +46,6 @@ namespace DiscordGubbBot.Modules
             }
         }
 
-        public static List<Emoji> OrderedEmojiList = new List<Emoji>() { new Emoji("1️⃣"), new Emoji("2️⃣"), new Emoji("3️⃣"), new Emoji("4️⃣"), new Emoji("5️⃣"), new Emoji("6️⃣"), new Emoji("7️⃣"), new Emoji("8️⃣"), new Emoji("9️⃣") };
-
-        public static List<Poll> Polls = new();
-
         [Command("vote")]
         [Alias("rösta")]
         public async Task Vote(string alternativesString = "") //Params?
@@ -62,13 +60,13 @@ namespace DiscordGubbBot.Modules
             {
                 for (int i = 0; i < alternatives.Length; i++)
                 {
-                    poll.Alternatives.Add(new Alternative() { Emoji = OrderedEmojiList[i], Text = alternatives[i] });
+                    poll.Alternatives.Add(new Alternative() { Emoji = InMemoryStorage.OrderedEmojiList[i], Text = alternatives[i] });
                 }
 
                 var message = await ReplyAsync($"Vad tycker ni?\n" + string.Join("\n", poll.Alternatives.Select(x => x.Emoji + " " + x.Text)));
                 poll.MessageID = message.Id;
 
-                Polls.Add(poll);
+                InMemoryStorage.Polls.Add(message.Id, poll);
             }
         }
 
