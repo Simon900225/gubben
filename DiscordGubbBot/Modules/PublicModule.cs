@@ -54,10 +54,10 @@ namespace DiscordGubbBot.Modules
 
             var poll = new Poll();
             var question = string.Empty;
-            if (alternativesStrings.FirstOrDefault().StartsWith("q="))
+            if (alternativesStrings.FirstOrDefault() == ("q"))
             {
-                poll.Question = alternativesStrings.FirstOrDefault().Substring(2);
-                alternatives = alternatives.Skip(1).ToList();
+                poll.Question = alternativesStrings.ElementAtOrDefault(2);
+                alternatives = alternatives.Skip(2).ToList();
             }
 
             if (alternatives.Count > 9)
