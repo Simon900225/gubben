@@ -56,7 +56,7 @@ namespace DiscordGubbBot.Modules
             var question = string.Empty;
             if (alternativesStrings.FirstOrDefault().StartsWith("q="))
             {
-                poll.Question = alternativesStrings.FirstOrDefault();
+                poll.Question = alternativesStrings.FirstOrDefault().Substring(2);
                 alternatives = alternatives.Skip(1).ToList();
             }
 
@@ -71,7 +71,7 @@ namespace DiscordGubbBot.Modules
                     poll.Alternatives.Add(new Alternative() { Emoji = InMemoryStorage.OrderedEmojiList[i], Text = alternatives[i] });
                 }
 
-                var message = await ReplyAsync($"Vad tycker ni? {question} {(string.IsNullOrEmpty(question) ? "?": "")}\n" + string.Join("\n", poll.Alternatives.Select(x => x.Emoji + " " + x.Text)));
+                var message = await ReplyAsync($"Vad tycker ni? {poll.Question} {(string.IsNullOrEmpty(poll.Question) ? "": "?")}\n" + string.Join("\n", poll.Alternatives.Select(x => x.Emoji + " " + x.Text)));
                 poll.MessageID = message.Id;
 
                 InMemoryStorage.Polls.Add(message.Id, poll);

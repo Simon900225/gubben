@@ -151,9 +151,7 @@ namespace DiscordGubbBot.Services
                         InMemoryStorage.MessageReactions[message.Id].Remove(toRemove);
                 }
 
-                var question = poll.Question;
-
-                newContent = $"Vad tycker ni? {question} {(string.IsNullOrEmpty(question) ? "?" : "")}\n";
+                newContent = $"Vad tycker ni? {poll.Question} {(string.IsNullOrEmpty(poll.Question) ? "" : "?")}\n";
 
                 foreach (var alternative in poll.Alternatives)
                 {
