@@ -156,7 +156,7 @@ namespace DiscordGubbBot.Services
                 foreach (var alternative in poll.Alternatives)
                 {
                     var alternativeReactions = InMemoryStorage.MessageReactions[message.Id].Where(x => x.Emoji.Name == alternative.Emoji.Name).OrderBy(x => x.Time);
-                    newContent += $"{alternative.Emoji} {alternative.Text} - {alternativeReactions.Count()}st :";
+                    newContent += $"{alternative.Emoji} {alternative.Text} - {alternativeReactions.Count()}st";
                     bool first = true;
                     foreach (var r in alternativeReactions)
                     {
@@ -165,7 +165,10 @@ namespace DiscordGubbBot.Services
                             newContent += ",";
                         }
                         if (first)
+                        {
                             first = false;
+                            newContent += " :";
+                        }
 
                         var reactUser = await messageChannel.GetUserAsync(r.UserID);
 
