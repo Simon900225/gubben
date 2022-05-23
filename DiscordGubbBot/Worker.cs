@@ -61,14 +61,14 @@ namespace DiscordGubbBot
 
         private Task Client_Ready()
         {
-            return Task.Run(() =>
-            {
-                var channel = client.GetChannel(Channels.DEV) as ITextChannel;
-                channel?.SendMessageAsync("Ja, jag är vaken nu...");
-#if DEBUG
-                channel?.SendMessageAsync("Vilka ska vara med och spela lunch-cs idag? TEST");
-#endif
-            });
+//             return Task.Run(() =>
+//             {
+//                 var channel = client.GetChannel(Channels.DEV) as ITextChannel;
+//                 channel?.SendMessageAsync("Ja, jag är vaken nu...");
+// #if DEBUG
+//                 channel?.SendMessageAsync("Vilka ska vara med och spela lunch-cs idag? TEST");
+// #endif
+//             });
         }
 
         private Task LogAsync(LogMessage log)
