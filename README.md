@@ -17,3 +17,20 @@ cd /dockercomposes/
 sudo docker-compose up -d  
 cd ~  
 rm -rf ./gubben
+
+#Docker compose region
+gubben:
+    image: discordgubbbot:latest
+    restart: unless-stopped
+    container_name: gubben
+    hostname: gubben
+    volumes:
+      - /etc/gubben/:/etc/gubben/
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=Europe/Stockholm
+      - SSH_URL=
+      - SSH_USERNAME=
+      - SSH_PASSWORD=
+      - LOGIN_TOKEN=
+      - GOOGLE_APPLICATION_CREDENTIALS=/etc/gubben/google_auth.json
